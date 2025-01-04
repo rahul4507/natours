@@ -1,0 +1,14 @@
+# Ignore all config.env files
+**/config.env
+
+# Ignore environment variables file for an Express.js project
+.env
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore npm debug files
+npm-debug.log*
