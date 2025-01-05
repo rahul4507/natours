@@ -3,12 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start:dev": "nodemon server.js",
+    "start:prod": "cross-env NODE_ENV=prod nodemon server.js"
   },
   "author": "@rahul4507",
   "license": "ISC",
   "description": "lets build a project for nature explorers using modern dev tools like node.js, express, mongoDB and mongoose",
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  },
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "morgan": "^1.10.0"
   }
