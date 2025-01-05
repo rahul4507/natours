@@ -7,6 +7,8 @@ const tourSchema = new mongoose.Schema({
     required: [true, 'A tour must have a name'],
     unique: true,
     trim: true,
+    maxlenght: [40, 'A tour name must have less or equal than 40 characters'],
+    minlenght: [10, 'A tour name must have more or equal than 10 characters']
   },
   slug: {
     type: String
@@ -22,10 +24,16 @@ const tourSchema = new mongoose.Schema({
   difficulty: {
     type: String,
     required: [true, 'A tour must have difficulty'],
+    enum: {
+      values: ['easy', 'difficult', 'medium'],
+      message: 'Difficulty is either easy, medium or difficult'
+    }
   },
   ratingsAverage: {
     type: String,
     default: 4.5,
+    min: [1, 'Rating must be above 1.0'],
+    max: [5, 'Rating must be below 5.0'],
   },
   ratingsQuantity: {
     type: Number,
@@ -79,16 +87,6 @@ tourSchema.pre('save', function (next) {
   next();
 })
 
-// tourSchema.pre('save', function (next) {
-//   console.log("will save the doc")
-//   next();
-// })
-
-// tourSchema.post('save', function (doc, next) {
-//   console.log(doc)
-//   next();
-// })
-
 // QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
   this.find({ screatTour: { $ne: true } });
@@ -101,6 +99,14 @@ tourSchema.post(/^find/, function (docs, next) {
   // console.log(docs);
   next();
 })
+
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { screatTour: { $ne: true } } })
+  next();
+})
+
+// Data Validation
 
 const Tour = mongoose.model('Tour', tourSchema);
 
