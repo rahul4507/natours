@@ -6,8 +6,12 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 
 // 1) Middlewares
-app.use(morgan('dev')); //-->>  // Middleware to log the request
-app.use(express.json()); //-->>  // Middleware to parse the body of the request
+if (process.env.NODE_ENV === 'dev') {
+  app.use(morgan('dev'));
+}
+
+app.use(express.json());
+
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
