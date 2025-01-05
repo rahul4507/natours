@@ -8,7 +8,7 @@
     "prettier"
   ],
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": "off",
     "spaced-comment": "off",
     "no-console": "warn",
     "consistent-return": "off",
@@ -22,14 +22,14 @@
     "prefer-destructuring": [
       "error",
       {
-        "object": true,
+        "object": false,
         "array": false
       }
     ],
     "no-unused-vars": [
       "error",
       {
-        "argsIgnorePattern": "req|res|next|val"
+        "argsIgnorePattern": "req|res|next|val|err"
       }
     ]
   }

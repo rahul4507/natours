@@ -12,3 +12,6 @@ node_modules/
 
 # Ignore npm debug files
 npm-debug.log*
+.codegpt
+.vscode
+.codegpt

@@ -3,18 +3,31 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon server.js",
+    "start": "nodemon server.js",
     "start:prod": "cross-env NODE_ENV=prod nodemon server.js"
   },
   "author": "@rahul4507",
   "license": "ISC",
   "description": "lets build a project for nature explorers using modern dev tools like node.js, express, mongoDB and mongoose",
   "devDependencies": {
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.3",
+    "prettier": "^3.4.2"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "mongoose": "^8.9.3",
     "morgan": "^1.10.0"
+  },
+  "engines": {
+     "node": ">=20"
   }
 }
