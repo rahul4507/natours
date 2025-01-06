@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "start:prod": "cross-env NODE_ENV=prod nodemon server.js"
+    "start:prod": "cross-env NODE_ENV=prod nodemon server.js",
+    "debug": "ndb server.js"
   },
   "author": "@rahul4507",
   "license": "ISC",
@@ -26,7 +27,9 @@
     "express": "^4.21.2",
     "mongoose": "^8.9.3",
     "morgan": "^1.10.0",
-    "slugify": "^1.6.6"
+    "ndb": "^1.1.5",
+    "slugify": "^1.6.6",
+    "validator": "^13.12.0"
   },
   "engines": {
     "node": ">=20"
