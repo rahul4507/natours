@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify')
+const validator = require('validator')
 
 const tourSchema = new mongoose.Schema({
   name: {
@@ -43,7 +44,16 @@ const tourSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'A tour must have a price'],
   },
-  priceDiscount: Number,
+  priceDiscount: {
+    type: Number,
+    validate: {
+      validator: function (val) {
+        // this will not work for update because the this keyword only points to the current doc which is being created.
+        return val < this.price;
+      },
+      message: 'Discount price ({VALUE}) should be below regular price'
+    }
+  },
   summary: {
     type: String,
     trim: true,
