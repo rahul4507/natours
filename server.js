@@ -1,6 +1,14 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
+// handlling uncaught exception
+process.on("uncaughtException", err => {
+  console.log(err.name, err.message);
+  console.log(err);
+  process.exit(1);
+})
+
+
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
@@ -13,10 +21,18 @@ const DB = process.env.DATABASE.replace(
 
 mongoose
   .connect(DB)
-  .then(() => console.log('DB connection successful!'))
-  .catch((err) => console.log('DB connection error:', err));
+  .then(() => console.log('DB connection successful!'));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// how to handle unhandlled rejection --> we will make use of event listeners
+process.on('unhandledRejection', err => {
+  console.log(err.name, err.message);
+  console.log("Unhandlled Rejection shutting down");
+  server.close(() => {
+    process.exit(1);
+  });
+})
