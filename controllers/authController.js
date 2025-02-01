@@ -14,6 +14,19 @@ const signToken = id => {
     );
 }
 
+const createSendToken = (user, statusCode, res) => {
+    const token = signToken(user._id)
+
+    res.status(statusCode).json({
+        status: STATUS.SUCCESS,
+        token,
+        data: {
+            user
+        }
+    })
+
+}
+
 exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create({
         name: req.body.name,
@@ -22,16 +35,7 @@ exports.signup = catchAsync(async (req, res, next) => {
         passwordConfirm: req.body.passwordConfirm,
         role: req.body.role,
     });
-
-    const token = signToken(newUser._id)
-
-    res.status(201).json({
-        status: STATUS.SUCCESS,
-        token,
-        data: {
-            user: newUser,
-        }
-    })
+    createSendToken(newUser, 201, res)
 });
 
 exports.login = async (req, res, next) => {
@@ -47,12 +51,7 @@ exports.login = async (req, res, next) => {
         return next(new AppError('Incorrect email or password', 400))
     }
 
-    const token = signToken(user._id)
-
-    res.status(200).json({
-        status: STATUS.SUCCESS,
-        token
-    })
+    createSendToken(user, 201, res)
 }
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -153,12 +152,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     await user.save();
 
     // 4) Log the user in, send JWT
-    const token = signToken(user._id)
-
-    res.status(200).json({
-        status: STATUS.SUCCESS,
-        token
-    })
+    createSendToken(user, 201, res)
 });
 
 
@@ -177,15 +171,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     await user.save();
 
     // 4) Log user in, send JWT
-    const token = signToken(user._id)
-
-    res.status(200).json({
-        status: STATUS.SUCCESS,
-        token
-    })
+    createSendToken(user, 201, res)
 });
-
-exports.getMe = (req, res, next) => {
-    req.params.id = req.user.id;
-    next()
-}
