@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
+const Review = require('./reviewModel');
 var bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
@@ -46,6 +47,13 @@ const userSchema = new mongoose.Schema({
         default: true,
         select: false
     },
+});
+
+// virtual populate
+userSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'user',
+    localField: '_id'
 });
 
 userSchema.pre('save', async function (next) {

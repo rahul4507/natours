@@ -14,11 +14,12 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.getUser = (req, res) => {
+exports.getUser = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.id).populate('reviews');
   res
-    .status(500)
-    .json({ status: STATUS.ERROR, message: 'This route is not yet defined' });
-};
+    .status(200)
+    .json({ status: STATUS.SUCCESS, data: { user } });
+});
 
 exports.getMe = (req, res, next) => {
   req.params.id = req.user.id;
