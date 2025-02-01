@@ -17,7 +17,8 @@ exports.signup = catchAsync(async (req, res, next) => {
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        passwordConfirm: req.body.passwordConfirm
+        passwordConfirm: req.body.passwordConfirm,
+        passwordChangedAt: req.body.passwordChangedAt,
     });
 
     const token = signToken(newUser._id)
@@ -74,9 +75,11 @@ exports.protect = catchAsync(async (req, res, next) => {
     }
 
     // 4) check if user changed password after the token was issued
-    // if (currentUser.changedPasswordAfter(decoded.iat)) {
-    //     return next(new AppError('User recently changed password! Please login again', 401))
-    // }
+    currentUser.changedPasswordAfter(decoded.iat);
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next(new AppError('User recently changed password! Please login again', 401))
+    }
 
+    // Grant access to protected route
     next()
 })
