@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-const slugify = require('slugify')
-// const validator = require('validator')
+const slugify = require('slugify');
+const User = require('./userModel');
+// const validator = require('validator');
 
 const tourSchema = new mongoose.Schema({
   name: {
@@ -76,47 +77,84 @@ const tourSchema = new mongoose.Schema({
   screatTour: {
     type: Boolean,
     default: false
-  }
+  },
+  startLocation: {
+    // GeoJSON
+    type: {
+      type: String,
+      default: 'Point',
+      enum: ['Point']
+    },
+    coordinates: {
+      type: [Number],
+      default: [0, 0],
+      validate: {
+        validator: function (val) {
+          return Array.isArray(val) && val.length === 2;
+        },
+        message: 'Coordinates must contain exactly two numbers [latitude, longitude]'
+      }
+    },
+    address: String,
+    description: String
+  },
+  locations: [
+    {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
+      },
+      coordinates: {
+        type: [Number],
+      },
+      address: String,
+      description: String,
+      day: Number
+    }
+  ],
+  guides: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User'
+    }
+  ],
 
 }, {
-  toJSON: {
-    virtuals: true
-  },
-  toObject: {
-    virtuals: true
-  }
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
+// Virtual property for duration in weeks
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
-// DOCUMENT MIDDLEWARE run before .save() and .create()
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
-})
+});
 
-// QUERY MIDDLEWARE
+// QUERY MIDDLEWARE: exclude tours marked as secret
 tourSchema.pre(/^find/, function (next) {
   this.find({ screatTour: { $ne: true } });
   this.start = Date.now();
   next();
-})
+});
 
 tourSchema.post(/^find/, function (docs, next) {
-  console.log(`Query Took ${Date.now() - this.start} millisecconds!`)
-  // console.log(docs);
+  console.log(`Query Took ${Date.now() - this.start} milliseconds!`);
   next();
-})
+});
 
-// AGGREGATION MIDDLEWARE
+// AGGREGATION MIDDLEWARE: exclude tours marked as secret
 tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { screatTour: { $ne: true } } })
+  this.pipeline().unshift({ $match: { screatTour: { $ne: true } } });
   next();
-})
+});
 
-// Data Validation
+
 
 const Tour = mongoose.model('Tour', tourSchema);
 

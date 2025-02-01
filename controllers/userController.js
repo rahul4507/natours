@@ -59,11 +59,17 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 });
 
-exports.getUsers = (req, res) => {
+exports.getUsers = catchAsync(async (req, res, next) => {
+  role = req.query.role;
+  let condition = {};
+  if (role) {
+    condition = { role: role }
+  }
+  const users = await User.find(condition);
   res
-    .status(500)
-    .json({ status: STATUS.ERROR, message: 'This route is not yet defined' });
-};
+    .status(200)
+    .json({ status: STATUS.SUCCESS, data: { users } });
+});
 
 exports.createUser = (req, res) => {
   res
