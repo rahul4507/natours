@@ -10,6 +10,9 @@ Natours is a tour booking application that allows users to explore and book vari
 - Book tours and manage bookings
 - Responsive design for mobile and desktop
 
+## Data Model
+![alt text](image.png)
+
 ## Getting Started
 
 Follow these instructions to set up the project on your local machine.
