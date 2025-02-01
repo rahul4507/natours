@@ -1,7 +1,11 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
+
+// Protect all routes after this middleware
+router.use(authController.protect);
 
 router
   .route('/top-5-cheap')
@@ -18,6 +22,6 @@ router
   .route('/:id')
   .get(tourController.getTour)
   .patch(tourController.updateTour)
-  .delete(tourController.deleteTour);
-
+  .delete(authController.restrictTo(['admin', 'lead-guide']), tourController.deleteTour);
+ 
 module.exports = router;
