@@ -48,6 +48,8 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
     return await bcrypt.compare(candidatePassword, userPassword);
 }
 
+
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

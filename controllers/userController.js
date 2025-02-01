@@ -26,11 +26,12 @@ exports.updateUser = (req, res) => {
     .json({ status: STATUS.ERROR, message: 'This route is not yet defined' });
 };
 
-exports.deleteUser = (req, res) => {
+exports.deleteUser = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndDelete(req.params.id);
   res
-    .status(500)
-    .json({ status: STATUS.ERROR, message: 'This route is not yet defined' });
-};
+    .status(200)
+    .json({ status: STATUS.SUCCESS, message: 'User Deleted successfully!' });
+});
 
 exports.deleteAllUsers = catchAsync(async (req, res, next) => {
   const result = await User.deleteMany({});
