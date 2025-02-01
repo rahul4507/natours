@@ -1,8 +1,11 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
-const authController = require('../controllers/authController')
+const authController = require('../controllers/authController');
 
 const router = express.Router();
+
+// Protect all routes after this middleware
+router.use(authController.protect);
 
 router
   .route('/top-5-cheap')
@@ -13,8 +16,8 @@ router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
 router
   .route('/')
-  .get(authController.protect, tourController.getAllTours)
-  .post(authController.protect, tourController.createTour);
+  .get(tourController.getAllTours)
+  .post(tourController.createTour);
 router
   .route('/:id')
   .get(tourController.getTour)
