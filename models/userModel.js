@@ -1,6 +1,5 @@
-
 const mongoose = require('mongoose');
-const validator = require('validator')
+const validator = require('validator');
 var bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
@@ -18,8 +17,13 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, "Provide a password"],
-        minlenght: 8,
+        minlength: 8,
         select: false
+    },
+    role: {
+        type: String,
+        enum: ['user', 'guide', 'lead-guide', 'admin'],
+        default: 'user'
     },
     photo: String,
     passwordConfirm: {
@@ -29,9 +33,9 @@ const userSchema = new mongoose.Schema({
             // this will work on only save and create 
             validator: function (el) {
                 return el == this.password;
-            }
-        },
-        message: "Passwords are not same!!"
+            },
+            message: "Passwords are not same!!"
+        }
     },
     passwordChangedAt: Date
 });
@@ -42,8 +46,12 @@ userSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, 12);
 
     this.passwordConfirm = undefined;
-    next()
-})
+
+    // Set passwordChangedAt to the current date
+    this.passwordChangedAt = Date.now() - 1000; // Subtract 1 second to ensure the token is created after this field is set
+
+    next();
+});
 
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
@@ -51,7 +59,6 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     if (this.passwordChangedAt) {
-        console.log(this.passwordChangedAt, JWTTimestamp);
         const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
         return JWTTimestamp < changedTimestamp;
     }
