@@ -2,6 +2,7 @@ const { STATUS } = require('../utils/constants');
 const catchAsync = require("../utils/catchAsync");
 const User = require("../models/userModel")
 const AppError = require("../utils/appError");
+const factory = require("../controllers/handlerFactory")
 
 
 const filterObj = (obj, ...allowedFields) => {
@@ -13,18 +14,6 @@ const filterObj = (obj, ...allowedFields) => {
   });
   return newObj;
 };
-
-exports.getUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.id).populate('reviews');
-  res
-    .status(200)
-    .json({ status: STATUS.SUCCESS, data: { user } });
-});
-
-exports.getMe = (req, res, next) => {
-  req.params.id = req.user.id;
-  next()
-}
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
@@ -60,37 +49,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 });
 
-exports.getUsers = catchAsync(async (req, res, next) => {
-  role = req.query.role;
-  let condition = {};
-  if (role) {
-    condition = { role: role }
-  }
-  const users = await User.find(condition);
-  res
-    .status(200)
-    .json({ status: STATUS.SUCCESS, data: { users } });
-});
-
-exports.createUser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: STATUS.ERROR, message: 'This route is not yet defined' });
-};
-
-exports.updateUser = (req, res) => {
-  res
-    .status(500)
-    .json({ status: STATUS.ERROR, message: 'This route is not yet defined' });
-};
-
-exports.deleteUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndDelete(req.params.id);
-  res
-    .status(200)
-    .json({ status: STATUS.SUCCESS, message: 'User Deleted successfully!' });
-});
-
 exports.deleteAllUsers = catchAsync(async (req, res, next) => {
   const result = await User.deleteMany({});
 
@@ -105,4 +63,6 @@ exports.deleteAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-
+exports.getUser = factory.getOne(User)
+exports.getUsers = factory.getAll(User)
+exports.deleteUser = factory.deleteOne(User)
