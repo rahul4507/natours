@@ -65,6 +65,23 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "script-src 'self' https://api.mapbox.com 'unsafe-inline';"
+  );
+  next();
+});
+
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "script-src 'self' https://api.mapbox.com 'unsafe-inline' 'unsafe-eval'; worker-src 'self' blob:; child-src 'self' blob:;"
+  );
+  next();
+});
+
+
 
 app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter);
