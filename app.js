@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const cors = require('cors'); // Import CORS
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -18,6 +19,9 @@ const app = express();
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
+
+// Enable CORS for all origins
+app.use(cors());
 
 // 1) Middlewares
 
@@ -62,26 +66,18 @@ app.use(hpp({
 // Test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log("i am here");
+  console.log(req.cookies);
   next();
 });
 
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "script-src 'self' https://api.mapbox.com 'unsafe-inline';"
+    "script-src 'self' https://api.mapbox.com https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval'; worker-src 'self' blob:; child-src 'self' blob:;"
   );
   next();
 });
-
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "script-src 'self' https://api.mapbox.com 'unsafe-inline' 'unsafe-eval'; worker-src 'self' blob:; child-src 'self' blob:;"
-  );
-  next();
-});
-
-
 
 app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter);
