@@ -3,6 +3,8 @@ const catchAsync = require("../utils/catchAsync");
 const User = require("../models/userModel")
 const AppError = require("../utils/appError");
 const factory = require("../controllers/handlerFactory")
+const multer = require('multer');
+const sharp = require('sharp');
 
 
 const filterObj = (obj, ...allowedFields) => {
@@ -29,30 +31,57 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updateMe = catchAsync(async (req, res, next) => {
+// Multer storage and file filter
+const multerStorage = multer.memoryStorage(); // Store in memory for processing with Sharp
 
-  // 1) create a error if user POSTs password data
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+exports.uploadUserPhoto = upload.single('photo'); // Middleware to handle file upload
+
+exports.updateMe = catchAsync(async (req, res, next) => {
+  // 1) Prevent updating password via this route
   if (req.body.password || req.body.passwordConfirm) {
-    return next(new AppError('This route is not for password updates. Please use /updateMyPassword', 400))
+    return next(new AppError('This route is not for password updates. Please use /updateMyPassword', 400));
   }
 
-  // 2) Filtered out unwanted fields names that are not allowed to be updated
-  const filteredBody = filterObj(req.body, 'name', 'email');
+  // 2) Filter out unwanted fields
+  const filteredBody = {};
+  if (req.body.name) filteredBody.name = req.body.name;
+  if (req.body.email) filteredBody.email = req.body.email;
 
-  // 2) Update user document
+  // 3) Process photo if uploaded
+  if (req.file) {
+    const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+    await sharp(req.file.buffer)
+      .resize(500, 500) // Resize to 500x500 pixels
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/users/${filename}`);
+
+    filteredBody.photo = filename;
+  }
+
+  // 4) Update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true
   });
 
-  // findByIdAndUpdate will not work as intended
-
   res.status(200).json({
-    status: STATUS.SUCCESS,
-    data: { updatedUser }
+    status: 'success',
+    data: { user: updatedUser }
   });
-
 });
+
 
 exports.deleteAllUsers = catchAsync(async (req, res, next) => {
   const result = await User.deleteMany({});

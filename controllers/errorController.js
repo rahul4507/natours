@@ -14,31 +14,49 @@ handleDuplicateFieldsDB = err => {
 const handleJWTError = () => new AppError("Invalid Token, Please Login again!!!", 401)
 const handleJWTTokenExpiredError = () => new AppError("Your Token got Expired, Please Login again!!!", 401)
 
-const sendErrorDev = (err, res) => {
-    res.status(err.statusCode).json({
-        status: err.status,
-        message: err.message,
-        error: err,
-        stack: err.stack
-    });
-}
-const sendErrorProd = (err, res) => {
-    if (err.isOperational) {
-        res.status(err.statusCode).json({
+const sendErrorDev = (err, req, res) => {
+    // console.log(req.startsWith)
+    if (req.originalUrl.startsWith('/api')) {
+        return res.status(err.statusCode).json({
             status: err.status,
-            message: err.message
+            error: err,
+            message: err.message,
+            stack: err.stack
         })
     }
-    //programming or other unknown error: don't leak error details
-    else {
-        // 1) log the error
-        console.error('ERROR ', err)
-
-        res.status(500).json({
+    return res.status(err.statusCode).render('error', {
+        title: 'Something went wrong!',
+        msg: err.message
+    })
+}
+const sendErrorProd = (err, req, res) => {
+    if (req.originalUrl.startsWith('/api')) {
+        if (err.isOperational) {
+            return res.status(err.statusCode).json({
+                status: err.status,
+                message: err.message
+            });
+        }
+        // Programming or other unknown error: don't leak error details
+        console.error('ERROR ', err);
+        return res.status(500).json({
             status: STATUS.ERROR,
             message: "Something went very wrong!"
-        })
+        });
     }
+    if (err.isOperational) {
+        return res.status(err.statusCode).render('error', {
+            title: 'Something went wrong!',
+            msg: err.message
+        });
+    }
+    // Programming or other unknown error: don't leak error details
+    console.error('ERROR ', err);
+    return res.status(500).render('error', {
+        title: 'Something went wrong!',
+        msg: 'Please try again later.'
+    });
+
 }
 
 module.exports = (err, req, res, next) => {
@@ -46,7 +64,7 @@ module.exports = (err, req, res, next) => {
     err.status = err.status || STATUS.ERROR;
 
     if (process.env.NODE_ENV === 'dev') {
-        sendErrorDev(err, res)
+        sendErrorDev(err, req, res)
     }
     else if (process.env.NODE_ENV === 'prod') {
         let error = { ...err }
@@ -55,6 +73,6 @@ module.exports = (err, req, res, next) => {
         if (error.code === 11000) error = handleDuplicateFieldsDB(error)
         if (error.name === 'JsonWebTokenError') error = handleJWTError()
         if (error.name === 'TokenExpiredError') error = handleJWTTokenExpiredError()
-        sendErrorProd(error, res)
+        sendErrorProd(error, req, res)
     }
 }

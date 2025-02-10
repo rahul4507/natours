@@ -7,7 +7,10 @@ header.header
     if user
       a.nav__el.nav__el--logout Log out
       a.nav__el(href='/me')
-        img.nav__user-img(src=`/img/users/${user.photo}` alt=`Photo of ${user.name}`)
+        if user.photo
+          img.nav__user-img(src=`/img/users/${user.photo}` alt=`Photo of ${user.name}`)
+        else
+          .nav__user-avatar(style='background-color: #ccc; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; margin-right:1rem;')= user.name.charAt(0).toUpperCase()
         span= user.name.split(' ')[0]
     else
       a.nav__el(href='/login') Log in
