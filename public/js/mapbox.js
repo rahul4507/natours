@@ -1,65 +1,61 @@
 // /* eslint-disable */
-// export const displayMap = locations => {
+export const displayMap = locations => {
+  mapboxgl.accessToken =
+    'pk.eyJ1IjoicmFodWxoaXJhZ29uZCIsImEiOiJjbTZ3MWw1NnEwZW85MnFwdDNmaHgzc3NoIn0.sC6iwUud989wSQT-lEWdNg'
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/rahulhiragond/cm6x8951w00kb01sa3no3hoam',
+    scrollZoom: false,
+    // center: [-118.113491, 34.111745],
+    // zoom: 10,
+    // interactive: false
+  });
+  // Add navigation control (the +/- zoom buttons)
+  const nav = new mapboxgl.NavigationControl({
+    showCompass: false
+  });
+  map.addControl(nav, 'top-right');
+  const bounds = new mapboxgl.LngLatBounds();
 
-const element = document.getElementById('map');
-const locations = JSON.parse(element.dataset.locations);
-console.log(locations);
-mapboxgl.accessToken =
-  'pk.eyJ1IjoicmFodWxoaXJhZ29uZCIsImEiOiJjbTZ3MWw1NnEwZW85MnFwdDNmaHgzc3NoIn0.sC6iwUud989wSQT-lEWdNg'
-var map = new mapboxgl.Map({
-  container: 'map',
-  style: 'mapbox://styles/rahulhiragond/cm6x8951w00kb01sa3no3hoam',
-  scrollZoom: false,
-  // center: [-118.113491, 34.111745],
-  // zoom: 10,
-  // interactive: false
-});
-// Add navigation control (the +/- zoom buttons)
-const nav = new mapboxgl.NavigationControl({
-  showCompass: false
-});
-map.addControl(nav, 'top-right');
-const bounds = new mapboxgl.LngLatBounds();
+  locations.forEach(loc => {
+    // Create marker
+    const el = document.createElement('div');
+    el.className = 'marker';
+    el.setAttribute('inert', ''); // Ensure the marker is not focusable when hidden
 
-locations.forEach(loc => {
-  // Create marker
-  const el = document.createElement('div');
-  el.className = 'marker';
-  el.setAttribute('inert', ''); // Ensure the marker is not focusable when hidden
+    // Add marker
+    new mapboxgl.Marker({
+      element: el,
+      anchor: 'bottom'
+    })
+      .setLngLat(loc.coordinates)
+      .addTo(map);
 
-  // Add marker
-  new mapboxgl.Marker({
-    element: el,
-    anchor: 'bottom'
-  })
-    .setLngLat(loc.coordinates)
-    .addTo(map);
+    const popup = new mapboxgl.Popup({
+      offset: 30
+    })
+      .setLngLat(loc.coordinates)
+      .setHTML(`<p>Day ${loc.day}: ${loc.description}</p>`)
+      .addTo(map);
 
-  const popup = new mapboxgl.Popup({
-    offset: 30
-  })
-    .setLngLat(loc.coordinates)
-    .setHTML(`<p>Day ${loc.day}: ${loc.description}</p>`)
-    .addTo(map);
+    // Ensure the close button is accessible
+    const closeButton = popup._content.querySelector('.mapboxgl-popup-close-button');
+    if (closeButton) {
+      closeButton.removeAttribute('aria-hidden');
+      closeButton.removeAttribute('inert');
+    }
+    // .addTo(map);
 
-  // Ensure the close button is accessible
-  const closeButton = popup._content.querySelector('.mapboxgl-popup-close-button');
-  if (closeButton) {
-    closeButton.removeAttribute('aria-hidden');
-    closeButton.removeAttribute('inert');
-  }
-  // .addTo(map);
+    // Extend map bounds to include current location
+    bounds.extend(loc.coordinates);
+  });
 
-  // Extend map bounds to include current location
-  bounds.extend(loc.coordinates);
-});
-
-map.fitBounds(bounds, {
-  padding: {
-    top: 200,
-    bottom: 150,
-    left: 100,
-    right: 100
-  }
-});
-// };
+  map.fitBounds(bounds, {
+    padding: {
+      top: 200,
+      bottom: 150,
+      left: 100,
+      right: 100
+    }
+  });
+};

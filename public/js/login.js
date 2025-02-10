@@ -1,8 +1,6 @@
 // /* eslint-disable */
-// import axios from 'axios';
-// import { showAlert } from './alerts';
-
-// const { STATUS } = require("../../utils/constants");
+import axios from 'axios';
+import { showAlert } from './alerts';
 
 // export const login = async (email, password) => {
 //   try {
@@ -27,21 +25,26 @@
 //   }
 // };
 
-// export const logout = async () => {
-//   try {
-//     const res = await axios({
-//       method: 'GET',
-//       url: 'http://127.0.0.1:3000/api/v1/users/logout'
-//     });
-//     if ((res.data.status = 'success')) location.reload(true);
-//   } catch (err) {
-//     console.log(err.response);
-//     showAlert('error', 'Error logging out! Try again.');
-//   }
-// };
+export const logout = async () => {
+  try {
+    const res = await axios({
+      method: 'GET',
+      url: 'http://127.0.0.1:3000/api/v1/users/logout',
+      withCredentials: true
+    });
+    if ((res.data.status = 'success')) {
+      window.setTimeout(() => {
+        location.assign('/');
+      });
+    }
+  } catch (err) {
+    console.log(err.response);
+    showAlert('error', 'Error logging out! Try again.');
+  }
+};
 
 
-const login = async (email, password) => {
+export const login = async (email, password) => {
   console.log(email);
   console.log(password);
   try {
@@ -51,28 +54,48 @@ const login = async (email, password) => {
       data: {
         email,
         password
-      }
+      },
+      withCredentials: true
     });
-    console.log(res);
+    // console.log(res);
+    showAlert('success', res);
     if (res.data.status === 'success') {
-      // alert('Logged in successfully!');
+      showAlert('success', 'Logged in successfully!');
       window.setTimeout(() => {
         location.assign('/');
       });
     }
   } catch (err) {
-    console.log(err);
+    showAlert('error', err.response.data.message);
   }
 }
 
-document.querySelector('.form').addEventListener('submit', e => {
-  // alert(email);
-  // console.log('Hello');
-  e.preventDefault();
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  // alert(email);
-  // console.log(email);
-  login(email, password);
-});
+export const signup = async (name, email, password, passwordConfirm) => {
+  console.log(name);
+  console.log(email);
+
+  try {
+    const res = await axios({
+      method: 'POST',
+      url: 'http://127.0.0.1:3000/api/v1/users/signup',
+      data: {
+        name,
+        email,
+        password,
+        passwordConfirm
+      },
+      withCredentials: true
+    });
+    console.log(res);
+    if (res.data.status === 'success') {
+      showAlert('success', 'Signed up successfully!');
+      window.setTimeout(() => {
+        location.assign('/');
+      });
+    }
+  } catch (err) {
+    showAlert('error', err.response.data.message);
+  }
+}
+
 

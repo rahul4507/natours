@@ -74,7 +74,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 
     if (!token) {
-        return next(new AppError('You are not logged in please login to access', 401))
+        return next(new AppError('You are not logged in! Please login to get access', 401))
     }
 
     // 2) verify token
@@ -180,6 +180,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     // 3) If so, update password
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
+    console.log('password', user.password, user.passwordConfirm, req.body.password, req.body.passwordConfirm)
     await user.save();
 
     // 4) Log user in, send JWT
@@ -199,7 +200,6 @@ exports.logout = (req, res) => {
 exports.isLoggedIn = async (req, res, next) => {
     if (req.cookies.jwt) {
         try {
-            console.log('Checking if user is logged in');
             // 1) verify token
             const decoded = await promisify(JWT.verify)(
                 req.cookies.jwt,
@@ -219,7 +219,7 @@ exports.isLoggedIn = async (req, res, next) => {
 
             // THERE IS A LOGGED IN USER
             res.locals.user = currentUser;
-            console.log('User is logged in');
+            // console.log('User is logged in');
 
             return next();
         } catch (err) {

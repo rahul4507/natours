@@ -1,4 +1,3 @@
-/* eslint-disable */
 import axios from 'axios';
 import { showAlert } from './alerts';
 
@@ -10,14 +9,18 @@ export const updateSettings = async (data, type) => {
         ? 'http://127.0.0.1:3000/api/v1/users/updateMyPassword'
         : 'http://127.0.0.1:3000/api/v1/users/updateMe';
 
+    const headers = type === 'data' ? { 'Content-Type': 'multipart/form-data' } : {};
+
     const res = await axios({
       method: 'PATCH',
       url,
-      data
+      data,
+      headers
     });
 
     if (res.data.status === 'success') {
       showAlert('success', `${type.toUpperCase()} updated successfully!`);
+      location.reload(); // Reload to update UI
     }
   } catch (err) {
     showAlert('error', err.response.data.message);

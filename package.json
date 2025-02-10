@@ -5,7 +5,9 @@
   "scripts": {
     "start": "nodemon server.js",
     "start:prod": "cross-env NODE_ENV=prod nodemon server.js",
-    "debug": "ndb server.js"
+    "debug": "ndb server.js",
+    "watch.js": "parcel watch public/js/index.js --out-dir public/js --out-file bundle.js",
+    "build.js": "parcel watch public/js/index.js --out-dir public/js --out-file bundle.js"
   },
   "author": "@rahul4507",
   "license": "ISC",
@@ -23,6 +25,7 @@
     "prettier": "^3.4.2"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
     "audit": "^0.0.6",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
@@ -37,9 +40,12 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "ndb": "^0.2.4",
     "nodemailer": "^6.10.0",
+    "parcel-bundler": "^1.12.5",
     "pug": "^3.0.3",
+    "sharp": "^0.33.5",
     "slugify": "^1.6.6",
     "stripe": "^17.6.0",
     "validator": "^13.12.0"
