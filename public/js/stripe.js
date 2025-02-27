@@ -1,7 +1,8 @@
 /* eslint-disable */
 import axios from 'axios';
 import { showAlert } from './alerts';
-const stripe = Stripe('sk_test_51Qq84lRxjI1XJVUyhIjRkyS0BT8ZiBS6KTA46doyiZhtysbayYFfsImpv8mVdeDccE52EpNqcMlQf1MTr6mXZUny006S5Q8f6D');
+// Use your publishable key here (it usually starts with 'pk_')
+const stripe = Stripe('pk_test_51Qq84lRxjI1XJVUy4rhI25BxTAMkgBliZKdvAlLQsFMLGdCmeF1QWps6XHHP6IhLvqPfgwOAlteF1IhlxyyDy3TH00O4GHk7Zu');
 
 export const bookTour = async tourId => {
   try {
@@ -11,7 +12,7 @@ export const bookTour = async tourId => {
     );
     console.log(session);
 
-    // 2) Create checkout form + chanre credit card
+    // 2) Create checkout form and charge credit card
     await stripe.redirectToCheckout({
       sessionId: session.data.session.id
     });

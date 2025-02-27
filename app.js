@@ -75,10 +75,11 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "script-src 'self' https://api.mapbox.com https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval'; worker-src 'self' blob:; child-src 'self' blob:;"
+    "script-src 'self' https://api.mapbox.com https://cdn.jsdelivr.net https://js.stripe.com 'unsafe-inline' 'unsafe-eval'; worker-src 'self' blob:; child-src 'self' blob: https://js.stripe.com;"
   );
   next();
 });
+
 
 app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter);

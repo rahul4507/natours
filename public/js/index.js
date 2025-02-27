@@ -1,6 +1,7 @@
 import { login, logout, signup } from './login.js';
 import { updateSettings } from './updateSettings.js';
 import { displayMap } from './mapbox.js';
+import { bookTour } from './stripe.js';
 import '@babel/polyfill';
 
 
@@ -11,6 +12,7 @@ const logoutButton = document.querySelector('.nav__el--logout');
 const signupForm = document.querySelector('.form--signup');
 const updateUserDataForm = document.querySelector('.form-user-data');
 const updatePasswordForm = document.querySelector('.form-user-password');
+const bookTourButton = document.getElementById('book-tour');
 
 // Login
 if (loginForm) {
@@ -71,3 +73,11 @@ if (updatePasswordForm) {
     await updateSettings({ passwordCurrent, password, passwordConfirm }, 'password');
   });
 }
+
+if (bookTourButton) {
+  bookTourButton.addEventListener('click', async e => {
+    e.target.textContent = 'Processing...';
+    const { tourId } = e.target.dataset;
+    await bookTour(tourId);
+  });
+} 
