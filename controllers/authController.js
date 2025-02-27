@@ -168,7 +168,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     // 3) If so, update password
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
-    console.log('password', user.password, user.passwordConfirm, req.body.password, req.body.passwordConfirm)
+    // console.log('password', user.password, user.passwordConfirm, req.body.password, req.body.passwordConfirm)
     await user.save();
 
     // 4) Log user in, send JWT
