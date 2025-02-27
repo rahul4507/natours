@@ -1,18 +1,18 @@
 const AppError = require("../utils/appError");
 const { STATUS } = require("../utils/constants");
 
-handleCastErrorDB = err => {
-    const message = `Invalid ${err.path}: ${err.value}.`;
-    return new AppError(message, 400);
-}
-handleDuplicateFieldsDB = err => {
-    const value = err.errorResponse.errmsg.match(/"([^"]*)"/)[0];
-    const message = `Duplicate field value: ${value}. Please use another value!`;
-    return new AppError(message, 400);
-};
+// handleCastErrorDB = err => {
+//     const message = `Invalid ${err.path}: ${err.value}.`;
+//     return new AppError(message, 400);
+// }
+// handleDuplicateFieldsDB = err => {
+//     const value = err.errorResponse.errmsg.match(/"([^"]*)"/)[0];
+//     const message = `Duplicate field value: ${value}. Please use another value!`;
+//     return new AppError(message, 400);
+// };
 
-const handleJWTError = () => new AppError("Invalid Token, Please Login again!!!", 401)
-const handleJWTTokenExpiredError = () => new AppError("Your Token got Expired, Please Login again!!!", 401)
+// const handleJWTError = () => new AppError("Invalid Token, Please Login again!!!", 401)
+// const handleJWTTokenExpiredError = () => new AppError("Your Token got Expired, Please Login again!!!", 401)
 
 const sendErrorDev = (err, req, res) => {
     // console.log(req.startsWith)
@@ -66,13 +66,13 @@ module.exports = (err, req, res, next) => {
     if (process.env.NODE_ENV === 'dev') {
         sendErrorDev(err, req, res)
     }
-    else if (process.env.NODE_ENV === 'production') {
-        let error = { ...err }
-        if (error.name === 'CastError') error = handleCastErrorDB(error)
+    // else if (process.env.NODE_ENV === 'production') {
+    //     let error = { ...err }
+    //     if (error.name === 'CastError') error = handleCastErrorDB(error)
 
-        if (error.code === 11000) error = handleDuplicateFieldsDB(error)
-        if (error.name === 'JsonWebTokenError') error = handleJWTError()
-        if (error.name === 'TokenExpiredError') error = handleJWTTokenExpiredError()
-        sendErrorProd(error, req, res)
-    }
+    //     if (error.code === 11000) error = handleDuplicateFieldsDB(error)
+    //     if (error.name === 'JsonWebTokenError') error = handleJWTError()
+    //     if (error.name === 'TokenExpiredError') error = handleJWTTokenExpiredError()
+    //     sendErrorProd(error, req, res)
+    // }
 }
