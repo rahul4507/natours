@@ -7,6 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const cors = require('cors'); // Import CORS
+const compression = require('compression');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -64,11 +65,12 @@ app.use(hpp({
   ]
 }));
 
+// Compress all text sent to clients
+app.use(compression());
+
 // Test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  // console.log("i am here");
-  // console.log(req.cookies);
   next();
 });
 
